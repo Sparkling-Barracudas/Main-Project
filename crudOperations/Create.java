@@ -91,13 +91,13 @@ public class Create extends CrudOperator {
 * Creates Customer order through inputs
 */
 	
-	public void createCustOrder(/*String date, String custEmail, int custLocation, String productId, int productQuantity*/) {
+	public void createCustOrder(String date, String email, int location, String productId, int amount) {
 		 
 		    Update updater = new Update();
 			Connection c = null;
 			c = CrudOperator.connect();
 		        // User Input for Date, Email, Location, ProdId, Amount purchased, and Date
-		        Scanner sc = new Scanner(System.in);
+		        /*Scanner sc = new Scanner(System.in);
 		        System.out.println("Input Date (as mm/dd/yyyy): ");
 		        String date = sc.next();
 
@@ -115,7 +115,7 @@ public class Create extends CrudOperator {
 
 		        System.out.println("Input Time of Purchase (as hh:mm): ");
 		        String time = sc.next();
-		        sc.close();
+		        sc.close(); */
 
 		        // SQL query that will attempt to add the user input into the Customer Orders table
 		        try {
@@ -125,14 +125,14 @@ public class Create extends CrudOperator {
 		            stmt = c.createStatement();
 
 		            String out = "INSERT INTO cust_orders (date, cust_email, cust_location, product_id, product_quantity)"
-		                    + "VALUES('" + date + "','" + email +"'," + Integer.parseInt(location) + ",'" + productId +"'," + Integer.parseInt(amount) + ");";
+		                    + "VALUES('" + date + "','" + email +"'," + location + ",'" + productId +"'," + amount + ");";
 
 		            stmt.executeUpdate(out);
 		            stmt.close();
 		            c.commit();
 
 		            // updateProduct method 
-		            updater.updateProductsNewCustOrder(Integer.parseInt(amount), productId);
+		            updater.updateProductsNewCustOrder(amount, productId);
 
 		        } catch (Exception e) {
 		            e.printStackTrace();

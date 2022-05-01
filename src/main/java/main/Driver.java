@@ -22,7 +22,7 @@ public class Driver{
 
 
 
-    public void main(String[] args) throws InterruptedException{
+    public static void main(String[] args) throws InterruptedException{
 
         // Creates new instance on start up
         Crud crud = Crud.getInstance();

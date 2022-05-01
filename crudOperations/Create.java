@@ -133,6 +133,7 @@ public class Create extends CrudOperator {
 
 		            // updateProduct method 
 		            updater.updateProductsNewCustOrder(amount, productId);
+		            updater.updateFinanceNewCustOrder( productId, amount, date);
 
 		        } catch (Exception e) {
 		            e.printStackTrace();

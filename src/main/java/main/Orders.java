@@ -1,6 +1,7 @@
 package main;
 
 import crudOperations.*;
+import email.CustomerEmail;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
@@ -55,7 +56,7 @@ public class Orders extends JFrame {
 		JButton btnNewButton_1 = new JButton("Back");
 		btnNewButton_1.setForeground(Color.WHITE);
 		btnNewButton_1.setBackground(Color.GRAY);
-		btnNewButton_1.setBounds(440, 5, 73, 23);
+		btnNewButton_1.setBounds(345, 5, 73, 23);
 		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				dispose();
@@ -94,8 +95,40 @@ public class Orders extends JFrame {
 		table = new JTable(data, column);
 		table.setBorder(new MatteBorder(1, 1, 1, 1, (Color) Color.GRAY));
 		scrollPane.setViewportView(table);
+		//create button
+		JButton btnNewButton_2 = new JButton("Create");
+		btnNewButton_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Create creator = new Create();
+				
+				String date = JOptionPane.showInputDialog(null, "Input Date");
+				String custEmail = JOptionPane.showInputDialog(null, "Input Email");
+				String location = JOptionPane.showInputDialog(null, "Input Location");
+				String productID = JOptionPane.showInputDialog(null, "Input Product ID");
+				String amount = JOptionPane.showInputDialog(null, "Input Amount");
+				int selectedOption = JOptionPane.showConfirmDialog(null, 
+                        "Do you wanna create a new order?", 
+                        "Choose", 
+                        JOptionPane.YES_NO_OPTION); 
+				if (selectedOption == JOptionPane.YES_OPTION) {
+					creator.createCustOrder(date, custEmail, Integer.parseInt(location), productID, Integer.parseInt(amount));
+					JOptionPane.showMessageDialog(null, "Order Has Been Placed");
+					try {
+						CustomerEmail.sendMail(custEmail, productID);
+					} catch (Exception e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+				
+				
+			}
+		});
+		btnNewButton_2.setBackground(Color.GRAY);
+		btnNewButton_2.setForeground(Color.WHITE);
+		btnNewButton_2.setBounds(428, 5, 89, 23);
+		contentPane.add(btnNewButton_2);
 		
 		Object[] row = new Object [5];
 	}
-
 }

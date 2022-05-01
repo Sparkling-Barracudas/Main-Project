@@ -67,6 +67,7 @@ public class Update {
 		c = CrudOperator.connect();
 		int quantityRet = 0;
 		
+		
 		try {
 			
 			Statement stmt = null;
@@ -82,9 +83,8 @@ public class Update {
             res.close();
 			
             //updates cust_orders table using user info
-			String out = "UPDATE cust_orders SET product_quantity = " + quantity + ", cust_email = '" + custEmail
-                    + "', cust_location = " + custLocation + ", date = '" + date + "' WHERE product_id = '" + id
-                    + "';";
+			String out = "UPDATE cust_orders SET product_quantity = " + quantity + ", cust_location = " + custLocation + ", "
+					+ "date = '" + date + "' WHERE product_id = '" + id+ "' AND cust_email = '" + custEmail +"';";
 
             stmt.executeUpdate(out);
             stmt.close();
@@ -94,6 +94,7 @@ public class Update {
             
             //calls method to update product inventory based on changes to order quantity
             updateProductsUpdatedCustOrder(quantityRet, id, quantity);
+            updateFinanceUpdatedCustOrder(quantityRet, id, quantity, date);
             
         } catch (Exception e) {
             e.printStackTrace();
@@ -149,7 +150,7 @@ public class Update {
     }
     /**
      * Called by updateCustomerOrderItem to update products inventory based on update to customer order.
-     * Finds difference between old costumer order quantity and new customer order quantity.
+     * Finds difference between old customer order quantity and new customer order quantity.
      *  
      * @param initialQuantity
      * @param productId
@@ -186,6 +187,126 @@ public class Update {
             c.setAutoCommit(false);
 
             String out = ("UPDATE Products set quantity ="+newAmount+" where product_id = '"+productId+"';");
+            stmt.executeUpdate(out);
+            stmt.close();
+            c.commit();
+            c.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+    }
+    
+    
+    public void updateFinanceUpdatedCustOrder( int initialQuantity, String productId, int quantity, String date) {
+
+    	Connection c = null;
+		c = CrudOperator.connect();
+		float wholesale = 0;
+		float saleprice = 0;
+		float initialProfit = 0;
+		
+        try {
+
+        	
+            //SQL query to try to get the current product quantity and setting it to previousAmount
+            Statement stmt = null;
+            stmt = c.createStatement();
+            ResultSet rs = stmt.executeQuery( "SELECT wholesale_cost, sale_price  FROM Products"
+            		+ " where product_id = '"+productId+"';" );
+            if (rs.next()) {
+            	wholesale = rs.getFloat("wholesale_cost");
+            	saleprice = rs.getFloat("sale_price");
+            }
+            
+            int quantDiff = quantity - initialQuantity;
+            float orderProfit = (saleprice - wholesale) * quantDiff;
+			
+            rs.close();
+            stmt.close();
+
+          //SQL query to try to get the current product quantity and setting it to previousAmount
+            Statement stmnt = null;
+            stmnt = c.createStatement();
+            ResultSet res = stmnt.executeQuery( "SELECT profit FROM Finance"
+            		+ " where dates = '"+date+"';" );
+            if (res.next()) {
+            	initialProfit = res.getFloat("profit");
+            }
+			
+            float newProfit = initialProfit + orderProfit;
+            
+            res.close();
+            stmnt.close();
+
+            //SQL query to attempt to update the product quantity in the products table 
+            stmt = c.createStatement();
+            c.setAutoCommit(false);
+
+            String out = ("UPDATE Finance set profit ="+newProfit+" where dates = '"+date+"';");
+            stmt.executeUpdate(out);
+            stmt.close();
+            c.commit();
+            c.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+    }
+    
+    
+    public void updateFinanceNewCustOrder( String productId, int quantity, String date) {
+
+    	Connection c = null;
+		c = CrudOperator.connect();
+		float wholesale = 0;
+		float saleprice = 0;
+		float initialProfit = 0;
+		int initialOrders = 0;
+		
+        try {
+
+        	
+            //SQL query to try to get the current product quantity and setting it to previousAmount
+            Statement stmt = null;
+            stmt = c.createStatement();
+            ResultSet rs = stmt.executeQuery( "SELECT wholesale_cost, sale_price  FROM Products"
+            		+ " where product_id = '"+productId+"';" );
+            if (rs.next()) {
+            	wholesale = rs.getFloat("wholesale_cost");
+            	saleprice = rs.getFloat("sale_price");
+            }
+            
+            float orderProfit = (saleprice - wholesale) * quantity;
+			
+            rs.close();
+            stmt.close();
+
+          //SQL query to try to get the current product quantity and setting it to previousAmount
+            Statement stmnt = null;
+            stmnt = c.createStatement();
+            ResultSet res = stmnt.executeQuery( "SELECT profit, orders FROM Finance"
+            		+ " where dates = '"+date+"';" );
+            if (res.next()) {
+            	initialProfit = res.getFloat("profit");
+            	initialOrders = res.getInt("orders");
+            }
+			
+            float newProfit = initialProfit + orderProfit;
+            initialOrders = initialOrders + 1;
+            
+            res.close();
+            stmnt.close();
+
+            //SQL query to attempt to update the product quantity in the products table 
+            stmt = c.createStatement();
+            c.setAutoCommit(false);
+
+            String out = ("UPDATE Finance set profit ="+newProfit+", orders = "+initialOrders+" where dates = '"+date+"';");
             stmt.executeUpdate(out);
             stmt.close();
             c.commit();

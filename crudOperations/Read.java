@@ -548,7 +548,7 @@ try {
 			c.setAutoCommit(false);
 			stmt = c.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, 
 	                ResultSet.CONCUR_UPDATABLE);
-			ResultSet rs = stmt.executeQuery("SELECT * FROM finance;");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM finance ORDER BY dates;");
 
 			int rowCount = getRowCount(rs); // Row Count
 			int columnCount = getColumnCount(rs); // Column Count

@@ -130,5 +130,33 @@ public class Orders extends JFrame {
 		contentPane.add(btnNewButton_2);
 		
 		Object[] row = new Object [5];
+	
+	
+	//Update Button
+			JButton btnNewButton_3 = new JButton("Update");
+			btnNewButton_3.setForeground(Color.WHITE);
+			btnNewButton_3.setBackground(Color.GRAY);
+			btnNewButton_3.setBounds(250, 5, 76, 23);
+			btnNewButton_3.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					Update updater = new Update();
+
+					String email = JOptionPane.showInputDialog(null, "Input Email");
+					String id = JOptionPane.showInputDialog(null, "Input Product ID");
+					String date = JOptionPane.showInputDialog(null, "Input New Date");
+					String location = JOptionPane.showInputDialog(null, "Input New Location");
+					String quant = JOptionPane.showInputDialog(null, "Input New Quantity");
+
+					int selectedOption = JOptionPane.showConfirmDialog(null, 
+			                        "Do you wanna update this item in the inventory?", 
+			                        "Choose", 
+			                        JOptionPane.YES_NO_OPTION); 
+					if (selectedOption == JOptionPane.YES_OPTION) {
+						updater.updateCustomerOrderItem(id, date, email, Integer.parseInt(location),Integer.parseInt(quant));
+						JOptionPane.showMessageDialog(null, "Item Has Been Updated");
+					}
+				}
+			});
+			contentPane.add(btnNewButton_3);
 	}
 }

@@ -8,29 +8,22 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import crudOperations.*;
 
-import net.dv8tion.jda.api.events.GenericEvent;
-import net.dv8tion.jda.api.events.ReadyEvent;
-import net.dv8tion.jda.api.hooks.EventListener;
 import oldCode.Crud;
 import oldCode.CustOrder;
 
 import javax.annotation.Nonnull;
-
-import botCode.Bot;
 
 /**
  * Driver class for the program
  *
  */
 
-public class Driver implements EventListener{
+public class Driver{
 
 
 
-    public static void main(String[] args) throws InterruptedException{
+    public void main(String[] args) throws InterruptedException{
 
-        //Create a new bot
-        new Bot();
         // Creates new instance on start up
         Crud crud = Crud.getInstance();
         CustOrder order = CustOrder.getInstance();
@@ -286,11 +279,5 @@ public class Driver implements EventListener{
         System.out.println("9) Quit");
 
 
-    }
-
-    public void onEvent(GenericEvent event) {
-        if (event instanceof ReadyEvent){
-            System.out.println("Bot has connected");
-        }
     }
 }

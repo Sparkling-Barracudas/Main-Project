@@ -12,7 +12,7 @@ import java.util.Date;
 
 public class BotCommands extends ListenerAdapter {
 
-    Botoperations cust = Botoperations.getInstance();
+    BotOperations cust = BotOperations.getInstance();
     public String prefix = "!";
     private boolean ordersuccess;
 
@@ -41,8 +41,16 @@ public class BotCommands extends ListenerAdapter {
         if(args[0].equalsIgnoreCase(prefix + "processorder")) {
             processOrder(event, args);
         }
+        if(args[0].equalsIgnoreCase(prefix + "cancel")) {
+            cancelOrder(event, args);
+        }
     }
 
+    /**
+     * Display available commands
+     * @param event The message that is received from channel
+     * @param user the user
+     */
     private void menu(MessageReceivedEvent event, String  user){
         event.getChannel().sendMessage("Hello " + user).queue();
         event.getChannel().sendMessage("1.) If you would like to place an order, please " +
@@ -50,8 +58,14 @@ public class BotCommands extends ListenerAdapter {
         event.getChannel().sendMessage("!createorder email location(int) product id quantity(int)").queue();
         event.getChannel().sendMessage("2.) If you would like to look at past orders, enter !orders").queue();
         event.getChannel().sendMessage("3.) If you would like a sample of our items, enter !browse").queue();
+        event.getChannel().sendMessage("4.) If you would like to cancel an order, enter !cancel (order id)").queue();
     }
 
+    /**
+     * Create new order
+     * @param event The message that is received from channel
+     * @param args The arguments in the message
+     */
     private void createOrder(MessageReceivedEvent event, String[] args){
         Connection conn = cust.connect();
         ordersuccess = true;
@@ -97,6 +111,12 @@ public class BotCommands extends ListenerAdapter {
             }
         }
     }
+
+    /**
+     * Show past orders
+     * @param event The message that is received from channel
+     * @param args The arguments in the message
+     */
     private void pastOrders(MessageReceivedEvent event, String[] args){
         Connection conn = cust.connect();
         String custId = event.getAuthor().getId();
@@ -132,6 +152,10 @@ public class BotCommands extends ListenerAdapter {
         }
     }
 
+    /**
+     * Shows available items
+     * @param event The message that is received from channel
+     */
     private void browse(MessageReceivedEvent event){
         Connection conn = cust.connect();
         try {
@@ -165,6 +189,13 @@ public class BotCommands extends ListenerAdapter {
         }
     }
 
+    /**
+     * Checks stock
+     * @param event The message that is received from channel
+     * @param prodId product Id
+     * @param quant Quantity
+     * @return
+     */
     public boolean checkStock(MessageReceivedEvent event, String prodId, int quant){
         Connection conn = cust.connect();
 
@@ -174,14 +205,15 @@ public class BotCommands extends ListenerAdapter {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT * FROM products WHERE product_id = '" + prodId.toUpperCase() + "';");
 
-            while(rs.next()){
-                int qt = rs.getInt("quantity");
+            if(rs.next() == false){
+                event.getChannel().sendMessage("Product not found").queue();
+                isThere = false;
+            }
+            int qt = rs.getInt("quantity");
                 if(quant > qt){
                     event.getChannel().sendMessage("Insufficient Quantity").queue();
                     isThere = false;
                 }
-            }
-
         } catch (Exception e){
             e.printStackTrace();
             event.getChannel().sendMessage("Product not found").queue();
@@ -191,6 +223,11 @@ public class BotCommands extends ListenerAdapter {
         return isThere;
     }
 
+    /**
+     * Processes order
+     * @param event The message that is received from channel
+     * @param args The arguments in the message
+     */
     public void processOrder(MessageReceivedEvent event, String[] args){
         Connection conn = cust.connect();
         String prodId = null;
@@ -237,6 +274,50 @@ public class BotCommands extends ListenerAdapter {
                 event.getChannel().sendMessage("Order processed!").queue();
             }else {
                 event.getChannel().sendMessage("Order already processed").queue();
+            }
+            rs.close();
+            stmt.close();
+            conn.commit();
+            conn.close();
+
+        } catch (Exception e){
+            e.printStackTrace();
+            event.getChannel().sendMessage("Order Not Found").queue();
+
+        }
+    }
+
+    /**
+     * Cancels order belonging to user
+     * @param event The message that is received from channel
+     * @param args The arguments in the message
+     */
+    public void cancelOrder(MessageReceivedEvent event, String[] args){
+        Connection conn = cust.connect();
+        String custId = "";
+        int discordOrderId = 0;
+        String status = "";
+        try{
+            discordOrderId = Integer.parseInt(args[1]);
+            conn.setAutoCommit(false);
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT * FROM discord_orders WHERE order_id = " + discordOrderId + ";");
+
+            while(rs.next()){
+                status = rs.getString("order_status");
+                custId = rs.getString("cust_id");
+            }
+
+            if(custId.equals(event.getAuthor().getId())) {
+                if (status.equals("Processing")) {
+                    stmt.executeUpdate("UPDATE discord_orders SET  order_status = 'Cancelled' WHERE order_id = '" + discordOrderId + "';");
+                    conn.commit();
+                    event.getChannel().sendMessage("cancelled!").queue();
+                } else {
+                    event.getChannel().sendMessage("Order already processed").queue();
+                }
+            }else{
+                event.getChannel().sendMessage("Order not found").queue();
             }
             rs.close();
             stmt.close();

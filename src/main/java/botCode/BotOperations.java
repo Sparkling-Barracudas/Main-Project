@@ -5,11 +5,11 @@ import java.io.*;
 import java.util.Scanner;
 
 
-public class Botoperations {
-    private static Botoperations firstInstance = null;
+public class BotOperations {
+    private static BotOperations firstInstance = null;
 
     // Constuctor for CustOrder
-    private Botoperations() {
+    private BotOperations() {
     }
 
     /**
@@ -18,9 +18,9 @@ public class Botoperations {
      *
      * @return returns the instance that's running or creates a new one
      */
-    public static Botoperations getInstance() {
+    public static BotOperations getInstance() {
         if (firstInstance == null) {
-            firstInstance = new Botoperations();
+            firstInstance = new BotOperations();
         }
 
         return firstInstance;

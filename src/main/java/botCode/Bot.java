@@ -39,7 +39,7 @@ public class Bot {
         JDABuilder jda = JDABuilder.createDefault(TOKEN);
         //Event Listeners defined for the bot
         jda.addEventListeners(
-                new main.Driver(),
+                new main.BotDriver(),
                 new BotCommands());
         //Sets the bot activity
         jda.setActivity(Activity.watching("Orders"));

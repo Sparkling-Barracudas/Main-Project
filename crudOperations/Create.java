@@ -155,8 +155,8 @@ public class Create extends CrudOperator {
 		
 		//initializing variables 
 		Read reader = new Read() ;
-		String startDate = "2022-01-01";
-		String endDate = "2022-01-31";
+		String startDate = "2020-01-01";
+		String endDate = "2020-01-31";
 		String january;
 		String february;
 		String march;
@@ -168,28 +168,28 @@ public class Create extends CrudOperator {
 		//finds total orders and profit for every month and for the year
 		january = reader.readFinanceSummary( startDate, endDate);
 		
-		startDate = "2022-02-01";
-		endDate = "2022-02-28";
+		startDate = "2020-02-01";
+		endDate = "2020-02-28";
 		february = reader.readFinanceSummary( startDate, endDate);
 		
-		startDate = "2022-03-01";
-		endDate = "2022-03-31";
+		startDate = "2020-03-01";
+		endDate = "2020-03-31";
 		march = reader.readFinanceSummary( startDate, endDate);
 		
-		startDate = "2022-04-01";
-		endDate = "2022-04-30";
+		startDate = "2020-04-01";
+		endDate = "2020-04-30";
 		april = reader.readFinanceSummary( startDate, endDate);
 		
-		startDate = "2022-05-01";
-		endDate = "2022-05-31";
+		startDate = "2020-05-01";
+		endDate = "2020-05-31";
 		may = reader.readFinanceSummary( startDate, endDate);
 		
-		startDate = "2022-06-01";
-		endDate = "2022-06-30";
+		startDate = "2020-06-01";
+		endDate = "2020-06-30";
 		june = reader.readFinanceSummary( startDate, endDate);
 		
-		startDate = "2022-01-01";
-		endDate = "2022-06-30";
+		startDate = "2020-01-01";
+		endDate = "2020-06-30";
 		yearToDate = reader.readFinanceSummary( startDate, endDate);
 		
 		String report = "January : \n\t" + january + "\nFebruary : \n\t" + february +

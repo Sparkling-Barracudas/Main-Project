@@ -38,7 +38,7 @@ public class DataTransferTest {
 				//sets values for int test
 				int quantRet = rs.getInt("quantity");
 				pogo.setInventoryQuantity(quantRet);
-				int expected2 = 5086;
+				int expected2 = 5081;
 				int result2 = pogo.getInventoryQuantity();
 				
 				float costRet = rs.getFloat("wholesale_cost");
